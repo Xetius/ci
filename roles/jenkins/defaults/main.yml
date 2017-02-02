@@ -1,6 +1,6 @@
 ---
 jenkins_version: latest
-jenkins_home_dir: /var/jenkins_home
+jenkins_home: /var/jenkins_home
 
 configs: [
   { src: "credentials.xml", dir: "/var/jenkins_home", file: "credentials.xml", mode: "0777" },
