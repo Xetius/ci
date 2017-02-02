@@ -1,0 +1,13 @@
+[control]
+control
+
+[cluster]
+cluster01
+cluster02
+cluster03
+cluster04
+
+[master]
+cluster01
+
+

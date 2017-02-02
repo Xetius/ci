@@ -1,0 +1,13 @@
+[docker]
+enamcis01 ansible_user=chudson ansible_connection=ssh
+enamcis02 ansible_user=chudson ansible_connection=ssh
+enamcis03 ansible_user=chudson ansible_connection=ssh
+enamcis04 ansible_user=chudson ansible_connection=ssh
+
+[cluster]
+enamcis01 ansible_user=chudson ansible_connection=ssh
+enamcis02 ansible_user=chudson ansible_connection=ssh
+enamcis03 ansible_user=chudson ansible_connection=ssh
+enamcis04 ansible_user=chudson ansible_connection=ssh
+
+

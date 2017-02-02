@@ -1,0 +1,5 @@
+debian_version: xenial
+docker_cfg: docker.cfg
+docker_cfg_dest: /etc/default/docker
+docker_user: vagrant
+

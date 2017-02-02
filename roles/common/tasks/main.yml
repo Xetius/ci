@@ -1,0 +1,26 @@
+- name: Ensure that LSB modules are loaded
+  apt:
+    name: lsb-core
+    force: yes
+  tags: [common]
+
+- name: Set locale to en.GB
+  apt:
+    name: language-pack-en
+    force: yes
+  tags: [common]
+
+- name: JQ is present
+  apt:
+    name: jq
+    force: yes
+  tags: [common]
+
+- name: Host is present
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ item.host_ip }}"
+    line: "{{ item.host_ip }} {{ item.host_name }}"
+  with_items: "{{ hosts }}"
+  tags: [common]
+

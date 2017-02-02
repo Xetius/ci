@@ -1,0 +1,8 @@
+hosts: [
+  { host_ip: "10.100.100.100", host_name: "control" },
+  { host_ip: "10.100.100.101", host_name: "cluster01" },
+  { host_ip: "10.100.100.102", host_name: "cluster02" },
+  { host_ip: "10.100.100.103", host_name: "cluster03" },
+  { host_ip: "10.100.100.104", host_name: "cluster04" },
+]
+
