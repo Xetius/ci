@@ -1,4 +1,13 @@
 ---
+- name: Directories are created
+  file:
+    path: "{{ item.dir }}"
+    mode: 0777
+    recurse: yes
+    state: directory
+  with_items: "{{ configs }}"
+  tags: [jenkins]
+
 - name: Container is running
   docker_container:
     name: jenkins
