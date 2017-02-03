@@ -56,6 +56,8 @@
 - name: Install plugins
   include: install_plugin.yml
   with_items: "{{ plugins }}"
+  loop_control:
+    loop_var: plugin_name
   tags: [jenkins]
 
 - name: Container is stopped
