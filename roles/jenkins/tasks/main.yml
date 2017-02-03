@@ -1,5 +1,5 @@
 ---
-- name: Directories are created
+- name: Config directories are created
   file:
     path: "{{ item.dir }}"
     mode: 0777
@@ -8,11 +8,87 @@
   with_items: "{{ configs }}"
   tags: [jenkins]
 
+- name: Config scripts directories are created
+  file:
+    path: "{{ item.dir }}"
+    mode: 0777
+    recurse: yes
+    state: directory
+  with_items: "{{ config_scripts }}"
+  tags: [jenkins]
+
+- name: Configurations scripts are present
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dir }}/{{ item.file }}"
+    mode: "{{ item.mode }}"
+  with_items: "{{ config_scripts }}"
+  register: config_result
+  tags: [jenkins]
+
 - name: Container is running
   docker_container:
     name: jenkins
     image: "jenkins:{{ jenkins_version }}"
+    env:
+      JENKINS_ADMIN_PASSWORD: "{{ jenkins_admin_password }}"
     ports: 8080:8080
     volumes:
-      - "{{ jenkins_home_dir }}:/var/jenkins_home"
+      - "{{ jenkins_home }}:/var/jenkins_home"
+      - "{{ keys_location }}:/keys"
+  register: container_result
+  tags: [jenkins]
+
+- pause:
+    seconds: 60
+  when: container_result|changed
+  tags: [jenkins]
+
+- name: Configurations are present
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dir }}/{{ item.file }}"
+    mode: "{{ item.mode }}"
+  with_items: "{{ configs }}"
+  register: configs_result
+  tags: [jenkins]
+
+- name: Install plugins
+  include: install_plugin.yml
+  with_items: "{{ plugins }}"
+  tags: [jenkins]
+
+- name: Container is stopped
+  docker:
+    name: jenkins
+    image: "jenkins:{{ jenkins_version }}"
+    state: stopped
+  when: configs_result|changed or config_scripts_result|changed or plugins_result|changed
+  tags: [jenkins]
+
+- name: Container is running
+  docker:
+    name: jenkins
+    image: "jenkins:{{ jenkins_version }}"
+    env: 
+      JENKINS_ADMIN_PASSWORD: "{{ jenkins_admin_password }}"
+    ports: 8080:8080
+    volumes:
+      - "{{ jenkins_home }}:/var/jenkins_home"
+      - "{{ keys_location }}:/keys"
+  when: configs_result|changed or config_scripts_result|changed or plugins_result|changed
+  tags: [jenkins]
+
+- pause: seconds=30
+  when: configs_result|changed or plugins_result|changed
+  tags: [jenkins]
+
+- name: Jenkins is reloaded
+  uri:
+    url: "http://{{ ip }}:8080/reload"
+    method: POST
+    status_code: 200,302
+  when: jobs_result|changed
+  ignore_errors: yes
+  tags: [jenkins]
 

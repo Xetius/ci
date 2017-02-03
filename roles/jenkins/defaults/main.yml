@@ -1,8 +1,33 @@
 ---
 jenkins_version: latest
 jenkins_home: /var/jenkins_home
+keys_location: /var/keys
 
 configs: [
   { src: "credentials.xml", dir: "/var/jenkins_home", file: "credentials.xml", mode: "0777" },
   { src: "scriptApproval.xml", dir: "/var/jenkins_home", file: "scriptApproval.xml", mode: "0644" }
+]
+
+config_scripts: [
+  { src: "config_scripts/basic_security.groovy", dir: "/var/jenkins_home/init.groovy.d", file: "basic_security.groovy", mode: "0777" }
+]
+
+plugins:
+  - git
+  - template-project
+  - pipeline
+  - docker-workflow
+  - template-project
+  - config-file-provider
+  - bitbucket
+  - disk-usage
+  - greenballs
+  - jacoco
+  - slack
+  - sonar
+
+jobs: [
+  {
+    name: "Hong Kong Jockey Club"
+  }
 ]

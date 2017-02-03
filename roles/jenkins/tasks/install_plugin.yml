@@ -1,0 +1,32 @@
+---
+- name: Get Jenkins crumb
+  uri:
+    user: admin
+    password: "{{ jenkins_admin_password }}"
+    force_basic_auth: yes
+    url: "http://{{ ansible_hostname }}:8080/crumbIssuer/api/json"
+    return_content: yes
+  register: crumb_token
+  until: crumb_token.content.find('Please wait while Jenkins is getting ready') == -1
+  retries: 10
+  delay: 5
+  tags: [jenkins]
+
+- name: Plugins are installed
+  uri:
+    url: "http://{{ ansible_host }}:8080/pluginManager/installNecessaryPlugins"
+    method: POST
+    user: admin
+    password: "{{ jenkins_admin_password }}"
+    body: '<jenkins><install plugin="{{ item }}@latest" /></jenkins>'
+    headers:
+      Content-Type: "text/xml"
+      Jenkins-Crumb: "{{ crumb_token.json.crumb }}"
+    creates: "{{ jenkins_home }}/plugins/{{ item }}"
+  register: plugins_result
+  tags: [jenkins]
+
+- wait_for:
+    path: "{{ jenkins_home }}/plugins/{{ item }}"
+  tags: [jenkins]
+

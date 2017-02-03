@@ -4,6 +4,12 @@
     force: yes
   tags: [common]
 
+- name: Facter is present
+  apt:
+    name: facter
+    force: yes
+  tags: [common]
+
 - name: Set locale to en.GB
   apt:
     name: language-pack-en
